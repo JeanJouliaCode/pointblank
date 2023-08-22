@@ -1,9 +1,10 @@
 name: Build and Deploy Svelte App
 
-on:
-  push:
-    branches:
-      - main  # Change this to your main branch name
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy to production'
+        required: true
 
 jobs:
   build:
