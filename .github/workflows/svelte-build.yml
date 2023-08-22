@@ -1,5 +1,5 @@
 name: Build and Deploy Svelte App
-
+on:
   workflow_dispatch:
     inputs:
       deploy:
