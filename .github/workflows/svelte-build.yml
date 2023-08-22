@@ -29,3 +29,11 @@ jobs:
 
       - name: Copy built files to Docs folder
         run: cp -R build/* docs/
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Build and deploy Svelte app"
+          git push
