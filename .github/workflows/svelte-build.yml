@@ -28,4 +28,4 @@ jobs:
         run: mkdir docs
 
       - name: Copy built files to Docs folder
-        run: cp -R public/* docs/
+        run: cp -R build/* docs/
