@@ -6,6 +6,7 @@ const config = {
 		adapter: adapter({
 			fallback: 'index.html',
             pages: 'docs',
+            assets: 'docs',
 		})
 	}
 };
