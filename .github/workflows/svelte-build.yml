@@ -29,6 +29,8 @@ jobs:
 
       - name: Copy built files to Docs folder
         run: cp -R build/* docs/
+      - name: Clear Git Credentials
+        run: git credential-cache exit
 
       - name: Commit and push changes
         run: |
