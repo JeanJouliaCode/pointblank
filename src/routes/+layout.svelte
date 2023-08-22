@@ -2,8 +2,6 @@
     import { onMount, onDestroy } from "svelte";
     import Hit from "../components/hit.svelte";
     import { callClickedElement, clickables } from "../stores.js";
-    export const prerender = true;
-    export const trailingSlash = "always";
 
     let x = -20;
     let y = -20;
