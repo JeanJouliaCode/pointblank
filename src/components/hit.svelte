@@ -1,8 +1,11 @@
 <script>
+    import { points } from "$src/stores.js";
     export let x;
     export let y;
 
     let imageElement;
+    let scoreValue = null;
+    let scoreTimeout;
 
     $: {
         if (x !== undefined && y !== undefined && imageElement) {
@@ -12,16 +15,33 @@
             }, 200);
         }
     }
+
+    points.subscribe((value) => {
+        clearTimeout(scoreTimeout);
+        scoreValue = value.reduce((accu, currentVal) => {
+            if (currentVal.date < Date.now() - 100) return accu;
+            return accu + currentVal.score;
+        }, 0);
+        scoreTimeout = setTimeout(() => {
+            scoreValue = null;
+        }, 200);
+    });
+
+    $: pointStyle = `color: ${scoreValue > 0 ? "green" : "red"};`;
 </script>
 
 <div style="{`left: ${x}px; top: ${y}px;`}">
-    <img bind:this="{imageElement}" src="hit.png" alt="hit" />
+    <img bind:this="{imageElement}" src="/images/hit.png" alt="hit" />
     <div class="hitAnimation"></div>
+    {#if scoreValue !== null}
+        <h1 style="{pointStyle}">{(scoreValue > 0 ? "+" : "") + scoreValue}</h1>
+    {/if}
 </div>
 
 <style scoped>
     div {
         position: absolute;
+        z-index: 10;
     }
 
     img {

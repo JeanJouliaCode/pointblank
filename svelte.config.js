@@ -8,8 +8,10 @@ const config = {
                 fallback: 'index.html'
             }
         ),
-      
-	}
+        alias: {
+            '$src': 'src',
+        },    
+	},
 };
 
 export default config;

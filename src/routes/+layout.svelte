@@ -1,7 +1,19 @@
 <script>
     import { onMount, onDestroy } from "svelte";
+    import { get } from "svelte/store";
+    import { id, callClickedElement, clickables } from "$src/stores.js";
     import Hit from "../components/hit.svelte";
-    import { callClickedElement, clickables } from "../stores.js";
+
+    let bullet1;
+    let bullet2;
+    let bullet3;
+
+    function playSound() {
+        bullet1.currentTime = 0;
+        bullet2.currentTime = 0;
+        bullet3.currentTime = 0;
+        [bullet1, bullet2, bullet3][Math.floor(Math.random() * 3)].play();
+    }
 
     let x = -20;
     let y = -20;
@@ -17,20 +29,24 @@
     }
 
     onMount(async () => {
+        bullet1 = new Audio("bullet1.mp3");
+        bullet2 = new Audio("bullet2.mp3");
+        bullet3 = new Audio("bullet3.mp3");
         const { Peer } = await import("peerjs");
-        var peer = new Peer("jjeeaann2013");
+        var peer = new Peer(get(id));
 
         peer.on("open", (id) => {
             console.log("My peer ID is: " + id);
 
             peer.on("connection", (conn) => {
                 conn.on("data", (data) => {
-                    const position = getBulletPosition(data);
+                    const position = getBulletPosition(data.position);
                     if (position) {
+                        playSound();
                         x = position.x;
                         y = position.y;
 
-                        callClickedElement(x, y);
+                        callClickedElement(x, y, data.id);
                     }
                 });
             });
@@ -38,10 +54,10 @@
     });
 
     function clickScreen(event) {
-        console.log("click", event);
+        playSound();
         x = event.offsetX;
         y = event.offsetY;
-        callClickedElement(x, y);
+        callClickedElement(x, y, "computerUser");
     }
 
     onDestroy(() => {
@@ -61,9 +77,26 @@
 </main>
 
 <style scoped>
+    :global(h1) {
+        font-size: 7vh;
+        text-align: center;
+        margin: 0px;
+    }
+
+    :global(h2) {
+        font-size: 7vh;
+        text-align: center;
+        margin: 0px;
+    }
+
+    :global(h3) {
+        font-size: 7vh;
+        text-align: center;
+        margin: 0px;
+    }
+
     .hitbox {
         position: absolute;
-        background: rgba(31, 105, 189, 0.096);
     }
 
     .center {
@@ -83,8 +116,16 @@
         z-index: 2;
     }
 
+    @font-face {
+        font-family: "kindergarten";
+        font-style: normal;
+        font-weight: 400;
+        src: url("/kindergarten.ttf") format("truetype");
+    }
+
     :global(body) {
         margin: 0;
+        font-family: "kindergarten";
     }
 
     main {
