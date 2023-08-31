@@ -27,7 +27,19 @@
         }, 200);
     });
 
-    $: pointStyle = `color: ${scoreValue > 0 ? "green" : "red"};`;
+    $: pointStyle = `color: ${getColor(scoreValue)};`;
+
+    function getColor(score) {
+        switch (true) {
+            case score < 0:
+                return "red";
+                break;
+            case score <= 100:
+                return "green";
+            default:
+                return "gold";
+        }
+    }
 </script>
 
 <div style="{`left: ${x}px; top: ${y}px;`}">
@@ -70,5 +82,9 @@
             opacity: 0;
             transform: translate(-50%, -50%);
         }
+    }
+
+    h1 {
+        z-index: 3;
     }
 </style>

@@ -4,9 +4,8 @@ export const clickables = writable([]);
 export const id = readable(Math.random().toString().substring(2));
 export const registeredUser = writable([]);
 export const currentGame = writable(0);
-export const bulletNumber = writable(0);
 export const isGameRunning = writable(false);
-export const missedBullet = writable(0);
+export const missedBullet = writable({count : 0, lastUser : null} );
 export const points = writable([]);
 
 export const possibleGame = ["balloon" , "balloon","balloon"]
@@ -51,17 +50,19 @@ export const updateClickable = (id , { x , y }) => {
 }
 
 export const callClickedElement = (x,y , id) => {
+    console.log("clicked")
     registerUser(id);
     let flagMissedSHot = true
     const _clickables = get(clickables);
+    const position = get(registeredUser).find(user => user.id === id)?.position;
         _clickables.forEach((clickable) => {
             if (x >= clickable.x && x <= clickable.x + clickable.width && y >= clickable.y && y <= clickable.y + clickable.height) {
                 flagMissedSHot = false;
-                const position = get(registeredUser).find(user => user.id === id)?.position;
+                
                 clickable.callback(position);
             }
         });
-        if(flagMissedSHot) missedBullet.update(_missedBullet => _missedBullet + 1);
+        if(flagMissedSHot) missedBullet.update(_missedBullet => ({count : _missedBullet.count + 1 , lastUser : position}));
 }
 
 export const registerUser = (id) => {

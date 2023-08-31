@@ -1,4 +1,5 @@
 <script>
+    import { log } from "qrcode/lib/core/galois-field";
     let ballon;
     import ClickableContainer from "./clickableContainer.svelte";
     import { createEventDispatcher } from "svelte";
@@ -46,10 +47,10 @@
         requestAnimationFrame(moveBallon);
     });
 
-    function shootBallon() {
+    function shootBallon(userId) {
         pop = true;
         setTimeout(() => {
-            dispatch("pop");
+            dispatch("pop", { userId });
         }, 200);
     }
 </script>

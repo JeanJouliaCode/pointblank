@@ -1,27 +1,34 @@
 <script>
     import Ballon from "$src/components/balloon.svelte";
     import { isGameRunning, updateScore, missedBullet } from "$src/stores.js";
+    import { onDestroy } from "svelte";
     import { get } from "svelte/store";
     let ballons = [true, true, true, true, true, true];
     let lastballoonPopDate = 0;
 
-    const ballonPop = (id) => {
+    const ballonPop = ({ index, userId }) => {
+        console.log("userId", userId);
         if (get(isGameRunning)) {
-            ballons[id] = false;
+            ballons[index] = false;
 
             if (Date.now() - lastballoonPopDate < 100) {
-                updateScore(0, 150);
+                updateScore(userId, 150);
             } else {
-                updateScore(0, 100);
+                updateScore(userId, 100);
                 lastballoonPopDate = Date.now();
             }
         }
     };
 
-    missedBullet.subscribe((value) => {
+    const unsubscribe = missedBullet.subscribe((value) => {
         if (get(isGameRunning)) {
-            updateScore(0, -50);
+            console.log("missedBullet");
+            updateScore(value.lastUser, -50);
         }
+    });
+
+    onDestroy(() => {
+        unsubscribe();
     });
 </script>
 
@@ -29,7 +36,7 @@
     {#if $isGameRunning}
         {#each ballons as ballon, i}
             {#if ballon}
-                <Ballon on:pop="{() => ballonPop(i)}" />
+                <Ballon on:pop="{(event) => ballonPop({ index: i, userId: event.detail.userId })}" />
             {/if}
         {/each}
     {/if}
@@ -39,5 +46,6 @@
     .page {
         height: 100%;
         width: 100%;
+        background-image: url("images/balloon/wood.png");
     }
 </style>
