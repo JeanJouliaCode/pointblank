@@ -103,7 +103,7 @@
 
 <main>
     <div class="center" id="center">
-        <div class="click-screen" on:mousedown="{clickScreen}"></div>
+        <div class="click-screen" on:mousedown="{clickScreen}" role="button" tabindex="0"></div>
         {#each $clickables as clickable}
             <div class="hitbox" style="{`width: ${clickable.width}px;height: ${clickable.height}px;left:${clickable.x}px;top:${clickable.y}px`}"></div>
         {/each}
