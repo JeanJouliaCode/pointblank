@@ -13,7 +13,7 @@
         if (x !== undefined && y !== undefined) updateClickable(id, { x, y });
     }
 
-    $: style = !!x && !!y ? `left: ${x < 0 ? 0 : x}px; top: ${y < 0 ? 0 : y}px; position: absolute;` : "";
+    $: style = !!x && !!y ? `left: ${x}px; top: ${y}px; position: absolute;` : "";
 
     onMount(async () => {
         const width = boundingBox.clientWidth;
@@ -25,9 +25,6 @@
         if (x === undefined) _x = rect.x - document.getElementById("center").offsetLeft - window.innerWidth * 0.1;
 
         if (y === undefined) _y = rect.y;
-
-        if (_y <= 0) _y = 1;
-        if (_x <= 0) _x = 1;
 
         id = addNewClickable({
             x: _x,

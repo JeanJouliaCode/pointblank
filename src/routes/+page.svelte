@@ -2,7 +2,7 @@
     import ClickableContainer from "../components/clickableContainer.svelte";
     import { goto } from "$app/navigation";
     import { get } from "svelte/store";
-    import { id, registeredUser } from "$src/stores.js";
+    import { id, registeredUser, disclamerCliked, isGameStarted, resetBullets } from "$src/stores.js";
     import { onMount } from "svelte";
     import QRCode from "qrcode";
 
@@ -21,11 +21,32 @@
         if (targetDown) return;
         targetDown = true;
         setTimeout(() => {
-            if (get(registeredUser).length >= 1) goto("/game-description");
+            if (get(registeredUser).length >= 1) {
+                isGameStarted.update(() => true);
+                resetBullets();
+                goto("/game-description");
+            }
             targetDown = false;
         }, 700);
     }
+
+    function dismissModal() {
+        console.log("dismissModal");
+        disclamerCliked.update(() => true);
+    }
 </script>
+
+{#if !$disclamerCliked}
+    <div class="modal-overlay">
+        <div class="modal">
+            <h1>Disclaimer</h1>
+            <p>
+                You will need you're phone to play this game. <br />
+            </p>
+            <button on:click="{dismissModal}">Start</button>
+        </div>
+    </div>
+{/if}
 
 <h1>Shoot the screen to register a player</h1>
 <div class="player-container">
@@ -83,5 +104,44 @@
     canvas {
         width: 30vh !important;
         height: 30vh !important;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        backdrop-filter: blur(10px);
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+
+    .modal {
+        width: 50vw;
+        height: 50vh;
+        background-color: white;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    p {
+        font-size: 3vh;
+    }
+
+    button {
+        width: 20vh;
+        height: 5vh;
+        border-radius: 10px;
+        background-color: rgb(0, 255, 0);
+        border: none;
+        cursor: pointer;
+        font-size: 3vh;
     }
 </style>

@@ -50,6 +50,11 @@
     function shootBallon(userId) {
         pop = true;
         setTimeout(() => {
+            const popSound = new Audio("pop.mp3");
+            popSound.play();
+        }, Math.random() * 50);
+
+        setTimeout(() => {
             dispatch("pop", { userId });
         }, 200);
     }

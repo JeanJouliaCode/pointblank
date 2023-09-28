@@ -1,9 +1,8 @@
 <script>
     import { onMount } from "svelte";
-    import { currentGame, possibleGame, isGameRunning } from "$src/stores.js";
+    import { currentGame, possibleGame, isGameRunning, gameMetadata } from "$src/stores.js";
     import { get } from "svelte/store";
     import { goto } from "$app/navigation";
-    const descriptions = ["The goal of the game is too pop as much ballon as possible with only 3 bullet"];
 
     onMount(() => {
         setTimeout(() => {
@@ -11,10 +10,12 @@
         }, 5000);
         isGameRunning.update(() => false);
     });
+
+    let description = gameMetadata[possibleGame[get(currentGame)]].description;
 </script>
 
 <div class="page">
-    <h1>{descriptions[$currentGame]}</h1>
+    <h1>{description}</h1>
 </div>
 
 <style scoped>

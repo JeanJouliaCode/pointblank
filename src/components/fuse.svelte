@@ -1,9 +1,9 @@
 <script>
     import { onMount } from "svelte";
-    import { isGameRunning } from "$src/stores.js";
+    import { isGameRunning, currentGame, possibleGame, gameMetadata, resetBullets } from "$src/stores.js";
     import { goto } from "$app/navigation";
     import { get } from "svelte/store";
-    let time = 10;
+    let time = gameMetadata[possibleGame[get(currentGame)]].time;
     let fuse;
     let sparkVisisble = false;
 
@@ -20,6 +20,13 @@
         setTimeout(() => {
             sparkVisisble = false;
             setTimeout(() => {
+                currentGame.update((value) => {
+                    if (value + 1 === possibleGame.length) {
+                        return 0;
+                    }
+                    return value + 1;
+                });
+                resetBullets();
                 goto("/game-description");
             }, 1000);
         }, time * 1000);

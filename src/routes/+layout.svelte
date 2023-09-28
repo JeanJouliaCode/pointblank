@@ -1,12 +1,15 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { get } from "svelte/store";
-    import { id, callClickedElement, clickables } from "$src/stores.js";
+    import { id, callClickedElement, clickables, disclamerCliked, removeBulletFromMagazin, isGameStarted } from "$src/stores.js";
     import Hit from "../components/hit.svelte";
 
     let bullet1;
     let bullet2;
     let bullet3;
+    let theme1;
+    let theme2;
+    let emptyClip;
 
     function playSound() {
         bullet1.currentTime = 0;
@@ -14,6 +17,32 @@
         bullet3.currentTime = 0;
         [bullet1, bullet2, bullet3][Math.floor(Math.random() * 3)].play();
     }
+
+    function playTheme() {
+        theme1 = new Audio("theme1.mp3");
+        theme1.loop = true;
+        theme1.play();
+        if (theme2) theme2.pause();
+    }
+
+    function playGameTheme() {
+        theme2 = new Audio("theme2.mp3");
+        theme2.loop = true;
+        theme2.play();
+        theme1.pause();
+    }
+
+    isGameStarted.subscribe((value) => {
+        if (value) {
+            playGameTheme();
+        }
+    });
+
+    disclamerCliked.subscribe((value) => {
+        if (value) {
+            playTheme();
+        }
+    });
 
     let x = -20;
     let y = -20;
@@ -32,6 +61,7 @@
         bullet1 = new Audio("bullet1.mp3");
         bullet2 = new Audio("bullet2.mp3");
         bullet3 = new Audio("bullet3.mp3");
+        emptyClip = new Audio("clipSound.mp3");
         const { Peer } = await import("peerjs");
         var peer = new Peer(get(id));
 
@@ -42,11 +72,7 @@
                 conn.on("data", (data) => {
                     const position = getBulletPosition(data.position);
                     if (position) {
-                        playSound();
-                        x = position.x;
-                        y = position.y;
-
-                        callClickedElement(x, y, data.id);
+                        takeTheShoot(position.x, position.y, data.id);
                     }
                 });
             });
@@ -54,10 +80,20 @@
     });
 
     function clickScreen(event) {
-        playSound();
-        x = event.offsetX;
-        y = event.offsetY;
-        callClickedElement(x, y, "computerUser");
+        if (!get(disclamerCliked)) return;
+        takeTheShoot(event.offsetX, event.offsetY, "computerUser");
+    }
+
+    function takeTheShoot(_x, _y, idUser) {
+        const isBulletShot = removeBulletFromMagazin(idUser);
+        if (isBulletShot) {
+            playSound();
+            x = _x;
+            y = _y;
+            callClickedElement(x, y, idUser);
+        } else {
+            emptyClip.play();
+        }
     }
 
     onDestroy(() => {
